@@ -1,14 +1,23 @@
 import { createTask } from "./addTask.js";
+import dateElement from './dateElement.js'
+import { uniqueDates, orderDates } from "../services/date.js";
 
-export const readTasks = () => {
+export const displayTasks = () => {
     const list = document.querySelector('[data-list]'); //aquí seleccionamos la lista a la cual nosotros vamos a querer agregar nuestras tareas que ya tenemos almacenadas
-    console.log(list);
-
     const taskList = JSON.parse(localStorage.getItem('tasks')) || [];
-
-    taskList.forEach((task) => {
-        list.appendChild(createTask(task));
-    });
+    const dates = uniqueDates(taskList);
+    orderDates(dates);
+    dates.forEach(date => { //Entonces estamos primero por cada uno de los elementos que existen dentro de nuestro arreglo dates, vas a ir al arreglo taskList, y vas a ir a cada uno de ellos generando esta estructura.
+        const dateMoment = moment(date, 'DD/MM/YYYY');
+        list.appendChild(dateElement(date));
+        taskList.forEach((task) => {
+            const taskDate = moment(task.dateFormat, 'DD/MM/YYYY');
+            const diff = dateMoment.diff(taskDate);
+            if( diff == 0){
+                list.appendChild(createTask(task));
+            }
+        });
+    })
 };
 
 //Aquí estamos de nuevo tomando la información que ya está almacenada en nuestro localStorage. Y por último, lo que vamos a hacer es recorrer este arreglo. Recuerda que para que tú puedas recorrer un arreglo, puedes utilizar diferentes métodos. Ahorita estamos utilizando forEach, pero también puedes hacerlo con for.

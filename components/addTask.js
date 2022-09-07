@@ -1,5 +1,6 @@
 import checkComplete from "./checkComplete.js";
 import deleteIcon from "./deleteIcon.js";
+import { displayTasks } from "./readTasks.js";
 
 export const addTask = (evento) => {
     evento.preventDefault(); // Evitamos el reseteo por defecto al presionar el boton del form
@@ -12,6 +13,10 @@ export const addTask = (evento) => {
     const date = calendar.value;
     const dateFormat = moment(date).format('DD/MM/YYYY');
 
+    if(value == '' || date == ''){
+        return;
+    }
+
     input.value = ''; //Luego de agregar la tarea dejamos el campo del input vacio
     calendar.value = '';
 
@@ -20,12 +25,13 @@ export const addTask = (evento) => {
         dateFormat
     } //Creamos un objeto que contiene llave y valor, y que servirá para almacenar una serie de datos en el LocalStorage.
     
+list.innerHTML = ''; //por cada una de las tareas que se están agregando, cada vez que nosotros estamos dando clic en el botón, lo que va a hacer es inicializar o decir que su estructura es cero, es simplemente un string vacío.
+
     const taskList = JSON.parse(localStorage.getItem('tasks'))  || []; //lo que tienes que entender es que, cuando nosotros ponemos estos pipelines lo que significa es, en caso de que esto que yo estoy escribiendo aquí sea null o indefinido, lo que voy a hacer es entonces formatearla o darle un valor por defecto, que en este caso sería mi arreglo vacío.
     taskList.push(taskObj);
     localStorage.setItem('tasks', JSON.stringify(taskList)); //La manera correcta de transformar los datos en string es a través de JSON.stringify y aprovechamos para utilizar el setItem para almacenar los datos localmente.
     
-    const task = createTask(taskObj);
-    list.appendChild(task); //Agregamos un li (hijo) dentro del ul (padre)
+    displayTasks(); //displayTask se va a encargar de ir agregando cada una de las tareas
 }
 
 export const createTask = ({value, dateFormat}) => {
